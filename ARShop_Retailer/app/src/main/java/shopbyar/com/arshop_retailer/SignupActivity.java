@@ -13,6 +13,13 @@ import android.widget.Toast;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import retrofit.Call;
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
+import shopbyar.com.arshop_retailer.model.RegisterUser;
+import shopbyar.com.arshop_retailer.model.User;
+import shopbyar.com.arshop_retailer.rest.RestClient;
 
 public class SignupActivity extends AppCompatActivity {
     private static final String TAG = "SignupActivity";
@@ -67,18 +74,26 @@ public class SignupActivity extends AppCompatActivity {
         String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
 
-        // TODO: Implement your own signup logic here.
+        RegisterUser user = new RegisterUser();
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setPassword(password);
 
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
-                        // On complete call either onSignupSuccess or onSignupFailed
-                        // depending on success
-                        onSignupSuccess();
-                        // onSignupFailed();
-                        progressDialog.dismiss();
-                    }
-                }, 3000);
+        Call<User> call = RestClient.getSharedInstance().getApiService().userSignup(user);
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Response<User> response, Retrofit retrofit) {
+                User user = response.body();
+                progressDialog.dismiss();
+                onSignupSuccess();
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                progressDialog.dismiss();
+                onSignupFailed();
+            }
+        });
     }
 
     public void onSignupSuccess() {
@@ -88,7 +103,7 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     public void onSignupFailed() {
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+        Toast.makeText(getBaseContext(), "Signup failed.", Toast.LENGTH_LONG).show();
 
         _signupButton.setEnabled(true);
     }

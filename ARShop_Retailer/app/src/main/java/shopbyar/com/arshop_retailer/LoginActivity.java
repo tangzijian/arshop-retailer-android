@@ -13,6 +13,13 @@ import android.util.Log;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import retrofit.Call;
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
+import shopbyar.com.arshop_retailer.model.LoginUser;
+import shopbyar.com.arshop_retailer.model.User;
+import shopbyar.com.arshop_retailer.rest.RestClient;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
@@ -64,15 +71,26 @@ public class LoginActivity extends AppCompatActivity {
         String username = _usernameText.getText().toString();
         String password = _passwordText.getText().toString();
 
-        new android.os.Handler().postDelayed(
-                new Runnable() {
-                    public void run() {
-                        // On complete call either onLoginSuccess or onLoginFailed
-                        onLoginSuccess();
-                        // onLoginFailed();
-                        progressDialog.dismiss();
-                    }
-                }, 3000);
+        LoginUser user = new LoginUser();
+        user.setUsername(username);
+        user.setPassword(password);
+        user.setType("name_and_password");
+        Call<User> call = RestClient.getSharedInstance().getApiService().userLogin(user);
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Response<User> response, Retrofit retrofit) {
+                User user = response.body();
+                onLoginSuccess();
+                progressDialog.dismiss();
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Log.d(TAG, t.getMessage());
+                onLoginFailed();
+                progressDialog.dismiss();
+            }
+        });
     }
 
     @Override
