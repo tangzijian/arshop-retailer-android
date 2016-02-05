@@ -64,4 +64,9 @@ public class User {
         currentUser = gson.fromJson(json, User.class);
         return currentUser;
     }
+
+    public static void destoryCurrentUser(SharedPreferences sp) {
+        sp.edit().remove("prefs_current_user");
+        sp.edit().commit();
+    }
 }

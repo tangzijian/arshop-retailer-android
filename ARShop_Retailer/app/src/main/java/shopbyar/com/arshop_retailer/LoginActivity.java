@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.View;
@@ -81,12 +82,19 @@ public class LoginActivity extends AppCompatActivity {
         user.setPassword(password);
         user.setType("name_and_password");
         Call<User> call = RestClient.getSharedInstance().getApiService().userLogin(user);
+        final LoginActivity self = this;
         call.enqueue(new Callback<User>() {
             @Override
             public void onResponse(Response<User> response, Retrofit retrofit) {
-                User user = response.body();
-                onLoginSuccess();
-                progressDialog.dismiss();
+                User.currentUser = response.body();
+                if (User.currentUser != null) {
+                    User.saveCurrentUser(PreferenceManager.getDefaultSharedPreferences(self));
+                    onLoginSuccess();
+                    progressDialog.dismiss();
+                } else {
+                    Log.d(TAG, response.message());
+                    onLoginFailed();
+                }
             }
 
             @Override
@@ -138,8 +146,8 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             _usernameText.setError(null);
         }
-        if (password.isEmpty() || password.length() < 6 || password.length() > 20) {
-            _passwordText.setError("between 6 and 20 alphanumeric characters.");
+        if (password.isEmpty()) {
+            _passwordText.setError("must not be empty.");
             valid = false;
         } else {
             _passwordText.setError(null);

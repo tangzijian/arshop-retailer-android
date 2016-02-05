@@ -13,10 +13,10 @@ import shopbyar.com.arshop_retailer.model.User;
  * Created by zijiantang on 29/1/16.
  */
 public interface APIService {
-    @POST("users/signup")
+    @POST("users/signup/")
     Call<User> userSignup(@Body RegisterUser user);
 
-    @PUT("users/login")
+    @PUT("users/login/")
     Call<User> userLogin(@Body LoginUser user);
 
     @POST("users/login_check/")
