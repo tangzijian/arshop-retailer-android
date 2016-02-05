@@ -18,4 +18,7 @@ public interface APIService {
 
     @PUT("users/login")
     Call<User> userLogin(@Body LoginUser user);
+
+    @POST("users/login_check/")
+    Call<User> userVerifyToken(@Body User user);
 }
