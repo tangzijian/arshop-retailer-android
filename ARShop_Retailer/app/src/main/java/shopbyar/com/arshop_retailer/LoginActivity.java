@@ -89,7 +89,11 @@ public class LoginActivity extends AppCompatActivity {
                 User.currentUser = response.body();
                 if (User.currentUser != null) {
                     User.saveCurrentUser(PreferenceManager.getDefaultSharedPreferences(self));
-                    onLoginSuccess();
+                    if (User.currentUser.code.equals("200")) {
+                        onLoginSuccess();
+                    } else {
+                        onLoginFailed();
+                    }
                     progressDialog.dismiss();
                 } else {
                     Log.d(TAG, response.message());

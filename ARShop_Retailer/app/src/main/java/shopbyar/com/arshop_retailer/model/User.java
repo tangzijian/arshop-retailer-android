@@ -52,6 +52,7 @@ public class User {
             return;
         }
         SharedPreferences.Editor prefsEditor = sp.edit();
+        prefsEditor.remove("prefs_current_user");
         Gson gson = new Gson();
         String json = gson.toJson(currentUser);
         prefsEditor.putString("prefs_current_user", json);

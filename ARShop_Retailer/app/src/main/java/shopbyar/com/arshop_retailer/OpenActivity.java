@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import retrofit.Call;
 import retrofit.Callback;
@@ -23,30 +24,33 @@ public class OpenActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        Log.d("OpenActity", "onResume");
         super.onResume();
         final User currentUser = User.fetchCurrentUser(PreferenceManager.getDefaultSharedPreferences(this));
         if (currentUser == null) {
             gotoLoginActivity();
         } else {
-            Call<User> call = RestClient.getSharedInstance().getApiService().userVerifyToken(currentUser);
-            final OpenActivity self = this;
-            call.enqueue(new Callback<User>() {
-                @Override
-                public void onResponse(Response<User> response, Retrofit retrofit) {
-                    User.currentUser = response.body();
-                    User.saveCurrentUser(PreferenceManager.getDefaultSharedPreferences(self));
-                    if (currentUser.code.equals("201")) {
-                        gotoLoginActivity();
-                    } else {
-                        gotoMainActiviy();
-                    }
-                }
-
-                @Override
-                public void onFailure(Throwable t) {
-                    gotoLoginActivity();
-                }
-            });
+            gotoMainActiviy();
+//            Call<User> call = RestClient.getSharedInstance().getApiService().userVerifyToken(currentUser);
+//            final OpenActivity self = this;
+//            call.enqueue(new Callback<User>() {
+//                @Override
+//                public void onResponse(Response<User> response, Retrofit retrofit) {
+//                    User user = User.currentUser;
+//                    if (response.body().code.equals("200")) {
+//                        User.currentUser = response.body();
+//                        User.saveCurrentUser(PreferenceManager.getDefaultSharedPreferences(self));
+//                        gotoMainActiviy();
+//                    } else {
+//                        gotoLoginActivity();
+//                    }
+//                }
+//
+//                @Override
+//                public void onFailure(Throwable t) {
+//                    gotoLoginActivity();
+//                }
+//            });
         }
     }
 

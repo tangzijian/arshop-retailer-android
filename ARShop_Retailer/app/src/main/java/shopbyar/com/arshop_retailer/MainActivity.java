@@ -1,5 +1,6 @@
 package shopbyar.com.arshop_retailer;
 
+import android.support.v7.app.ActionBar;
 import android.app.FragmentManager;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -14,6 +15,7 @@ import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
@@ -53,12 +55,13 @@ public class MainActivity extends AppCompatActivity {
         // Create Drawer
         drawer = new DrawerBuilder()
                 .withActivity(this)
+                .withToolbar(toolbar)
                 .withAccountHeader(accountHeader)
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName("Camera").withIcon(GoogleMaterial.Icon.gmd_camera).withIdentifier(1),
                         new PrimaryDrawerItem().withName("My Shops").withIcon(GoogleMaterial.Icon.gmd_shopping_basket).withIdentifier(2),
                         new PrimaryDrawerItem().withName("My Photos").withIcon(GoogleMaterial.Icon.gmd_book_photo).withIdentifier(3),
-                        new SectionDrawerItem(),
+                        new DividerDrawerItem(),
                         new PrimaryDrawerItem().withName("Logout").withIcon(GoogleMaterial.Icon.gmd_power_off).withIdentifier(4)
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
@@ -73,6 +76,9 @@ public class MainActivity extends AppCompatActivity {
             drawer.setSelection(1, false);
             selectItem(drawer.getDrawerItem(1));
         }
+        ActionBar bar = getSupportActionBar();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        drawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
     }
 
     @Override
@@ -102,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                 fragmentClass = CameraFragment.class;
                 break;
             case 2:
-                fragmentClass = CameraFragment.class;
+                fragmentClass = MyShopsFragment.class;
                 break;
             case 3:
                 fragmentClass = CameraFragment.class;
