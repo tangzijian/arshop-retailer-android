@@ -19,8 +19,12 @@ public class OpenActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_open);
+    }
 
-        User currentUser = User.fetchCurrentUser(PreferenceManager.getDefaultSharedPreferences(this));
+    @Override
+    protected void onResume() {
+        super.onResume();
+        final User currentUser = User.fetchCurrentUser(PreferenceManager.getDefaultSharedPreferences(this));
         if (currentUser == null) {
             gotoLoginActivity();
         } else {
@@ -31,7 +35,11 @@ public class OpenActivity extends AppCompatActivity {
                 public void onResponse(Response<User> response, Retrofit retrofit) {
                     User.currentUser = response.body();
                     User.saveCurrentUser(PreferenceManager.getDefaultSharedPreferences(self));
-                    gotoMainActiviy();
+                    if (currentUser.code.equals("201")) {
+                        gotoLoginActivity();
+                    } else {
+                        gotoMainActiviy();
+                    }
                 }
 
                 @Override

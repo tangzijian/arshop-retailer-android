@@ -1,6 +1,7 @@
 package shopbyar.com.arshop_retailer.model;
 
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
@@ -13,13 +14,15 @@ import java.util.List;
  */
 public class User {
     @SerializedName("user_name")
-    private String username;
+    public String username;
     @SerializedName("access_token")
-    private String authToken;
+    public String authToken;
     @SerializedName("user_shops")
-    private List<UserShop> shops;
+    public List<UserShop> shops;
+    @SerializedName("code")
+    public String code;
 
-    public static User currentUser;
+    public static User currentUser = null;
 
     public User() {
         shops = new ArrayList<>();
@@ -66,6 +69,7 @@ public class User {
     }
 
     public static void destoryCurrentUser(SharedPreferences sp) {
+        currentUser = null;
         sp.edit().remove("prefs_current_user");
         sp.edit().commit();
     }
