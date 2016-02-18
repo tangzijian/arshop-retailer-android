@@ -48,6 +48,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v4.view.LayoutInflaterCompat;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
@@ -57,7 +58,15 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.iconics.IconicsDrawable;
+import com.shehabic.droppy.DroppyClickCallbackInterface;
+import com.shehabic.droppy.DroppyMenuCustomItem;
+import com.shehabic.droppy.DroppyMenuItem;
+import com.shehabic.droppy.DroppyMenuPopup;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -228,11 +237,10 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
 
         @Override
         public void onImageAvailable(ImageReader reader) {
-            String folder = PreferenceManager.getDefaultSharedPreferences(getActivity()
-                    .getApplicationContext()).getString("folder", "default");
             String name = "" + System.currentTimeMillis() + ".jpg";
             setCameraControlNormal();
-            mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), folder, name,
+            Image image = reader.acquireNextImage();
+            mBackgroundHandler.post(new ImageSaver(image, mFolderName, name,
                     getActivity()));
         }
 
@@ -421,10 +429,44 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
         return mRootView;
     }
 
+    private List<String> availableFolderNames;
+    private String mFolderName = "default";
     @Override
     public void onViewCreated(final View view, Bundle savedInstanceState) {
         view.findViewById(R.id.control_take_picture).setOnClickListener(this);
+        ImageView setFolderButton = (ImageView) view.findViewById(R.id.set_folder);
+        setFolderButton.setImageDrawable(new IconicsDrawable(getActivity()).icon(GoogleMaterial.Icon.gmd_folder_special).sizeDp(32).color(Color.BLUE));
         mTextureView = (AutoFitTextureView) view.findViewById(R.id.camera_texture);
+
+        // Setup drop down menu
+        availableFolderNames = new ArrayList<>();
+        File dir = getActivity().getExternalFilesDir(null);
+        if (dir.isDirectory()) {
+            File[] files = dir.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (file.isDirectory()) {
+                        availableFolderNames.add(file.getName());
+                    }
+                }
+            }
+        }
+        DroppyMenuPopup.Builder droppyBuilder = new DroppyMenuPopup.Builder(getActivity(), setFolderButton);
+        for (String str : availableFolderNames) {
+            droppyBuilder.addMenuItem(new DroppyMenuItem(str));
+            droppyBuilder.addSeparator();
+        }
+        droppyBuilder.setOnClick(new DroppyClickCallbackInterface() {
+            @Override
+            public void call(View v, int id) {
+                if (id>=0 && id<availableFolderNames.size()) {
+                    mFolderName = availableFolderNames.get(id);
+                } else {
+                    mFolderName = "default";
+                }
+            }
+        });
+        droppyBuilder.build();
     }
 
     @Override
@@ -540,9 +582,7 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
         } catch (InterruptedException e) {
             throw new RuntimeException("Interrupted while trying to lock camera opening.", e);
         } catch (SecurityException e) {
-            Toast toast = Toast.makeText(getActivity(), "Make sure you have granted enough permissions to this app", Toast.LENGTH_LONG);
-            toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 100);
-            toast.show();
+            PermissionCheck.showToastAndClose("Make sure you have granted enough permissions to this app");
         }
     }
 
@@ -900,14 +940,14 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
         }
 
         private void saveMetaDataToFile(File metaFile) {
-//            String meta = ImageMeta.getJSON();
-//            try {
-//                FileOutputStream output = new FileOutputStream(metaFile);
-//                output.write(meta.getBytes());
-//            } catch (IOException e) {
-//                Log.i(TAG, "write meta data failed");
-//                e.printStackTrace();
-//            }
+            String meta = ImageMeta.getJSON();
+            try {
+                FileOutputStream output = new FileOutputStream(metaFile);
+                output.write(meta.getBytes());
+            } catch (IOException e) {
+                Log.i(TAG, "write meta data failed");
+                e.printStackTrace();
+            }
         }
 
         private void saveImageToFile(File imageFile) {
@@ -945,6 +985,7 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
 
         @Nullable
         private File createImageFile() {
+            File dir = mActivity.getExternalFilesDir(null);
             File imageFile = new File(mActivity.getExternalFilesDir(null), mFolder+"/"+mName);
             if (!imageFile.exists()) {
                 try {
