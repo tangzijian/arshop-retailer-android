@@ -52,5 +52,5 @@
         <!-- CAB :D -->
         <item name="windowActionModeOverlay">true</item>
     </style>
-
+    <style name="ProgressBarStyle" parent="@android:style/Widget.ProgressBar.Horizontal"/>
 </resources>

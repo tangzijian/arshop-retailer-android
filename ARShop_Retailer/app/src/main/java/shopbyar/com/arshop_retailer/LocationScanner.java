@@ -60,6 +60,8 @@ public class LocationScanner implements GoogleApiClient.ConnectionCallbacks,
                         mGoogleApiClient, mLocationRequest, this);
             } catch (SecurityException e) {
                 PermissionCheck.showToastAndClose("Make sure you have granted enough permissions to this app");
+            } catch (Exception other) {
+                other.printStackTrace();
             }
         }
     }
@@ -72,25 +74,36 @@ public class LocationScanner implements GoogleApiClient.ConnectionCallbacks,
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.i(TAG, "onConnectionFailed");
-        Log.i(TAG, connectionResult.toString());
     }
 
     public void onCreate() {
         Log.i(TAG, "onCreated");
-        buildGoogleApiClient();
-        createLocationRequest();
+        try {
+            buildGoogleApiClient();
+            createLocationRequest();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void onStart() {
         if (mGoogleApiClient != null) {
-            mGoogleApiClient.connect();
+            try {
+                mGoogleApiClient.connect();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         Log.i(TAG, "onStart");
     }
 
     public void onStop() {
         if (mGoogleApiClient != null) {
-            mGoogleApiClient.disconnect();
+            try {
+                mGoogleApiClient.disconnect();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         Log.i(TAG, "onStop");
     }
@@ -98,9 +111,13 @@ public class LocationScanner implements GoogleApiClient.ConnectionCallbacks,
     public void onResume() {
         Log.i(TAG, "onResume");
         if (mGoogleApiClient != null && mLocationRequest != null) {
-            if (mGoogleApiClient.isConnected()) {
-                LocationServices.FusedLocationApi.requestLocationUpdates(
-                        mGoogleApiClient, mLocationRequest, this);
+            try {
+                if (mGoogleApiClient.isConnected()) {
+                    LocationServices.FusedLocationApi.requestLocationUpdates(
+                            mGoogleApiClient, mLocationRequest, this);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -121,7 +138,11 @@ public class LocationScanner implements GoogleApiClient.ConnectionCallbacks,
     public void onLocationChanged(Location location) {
         Log.i(TAG, "onLocationChanged " + location.toString());
         if (mListener != null) {
-            mListener.set(location);
+            try {
+                mListener.set(location);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

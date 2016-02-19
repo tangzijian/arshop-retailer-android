@@ -108,6 +108,11 @@ public class MainActivity extends AppCompatActivity {
             drawer.closeDrawer();
             return;
         }
+        FragmentManager fm = getFragmentManager();
+        if (fm.getBackStackEntryCount() > 0) {
+            fm.popBackStack();
+            return;
+        }
         // disable going back to the OpenActivity
         moveTaskToBack(true);
     }
@@ -132,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
                 fragmentClass = MyShopsFragment.class;
                 break;
             case 3:
-                fragmentClass = CameraFragment.class;
+                fragmentClass = MyPhotosFragment.class;
                 break;
             case 4: // Logout
                 userLogout();
@@ -156,7 +161,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        mLocationScanner.onStart();
+        if (mLocationScanner != null) {
+            mLocationScanner.onStart();
+        }
     }
 
     @Override
@@ -218,16 +225,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void switchColor(View viewById) {
-        int color = Color.TRANSPARENT;
-        Drawable background = viewById.getBackground();
-        if (background instanceof ColorDrawable) {
-            color = ((ColorDrawable) background).getColor();
-        }
-        if (color == Color.WHITE) {
-            viewById.setBackgroundColor(Color.GREEN);
-        }
-        else {
-            viewById.setBackgroundColor(Color.WHITE);
+        if (viewById != null) {
+            try {
+                int color = Color.TRANSPARENT;
+                Drawable background = viewById.getBackground();
+                if (background instanceof ColorDrawable) {
+                    color = ((ColorDrawable) background).getColor();
+                }
+                if (color == Color.WHITE) {
+                    viewById.setBackgroundColor(Color.GREEN);
+                }
+                else {
+                    viewById.setBackgroundColor(Color.WHITE);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

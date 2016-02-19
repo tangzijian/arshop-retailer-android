@@ -49,6 +49,7 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.view.LayoutInflaterCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
@@ -441,16 +442,7 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
         // Setup drop down menu
         availableFolderNames = new ArrayList<>();
         File dir = getActivity().getExternalFilesDir(null);
-        if (dir.isDirectory()) {
-            File[] files = dir.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    if (file.isDirectory()) {
-                        availableFolderNames.add(file.getName());
-                    }
-                }
-            }
-        }
+        availableFolderNames = FileUtils.getPhotoFolderNames(dir);
         DroppyMenuPopup.Builder droppyBuilder = new DroppyMenuPopup.Builder(getActivity(), setFolderButton);
         for (String str : availableFolderNames) {
             droppyBuilder.addMenuItem(new DroppyMenuItem(str));
@@ -472,6 +464,7 @@ public class CameraFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
     }
 
     @Override

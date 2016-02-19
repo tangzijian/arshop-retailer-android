@@ -71,7 +71,8 @@ public class User {
 
     public static void destoryCurrentUser(SharedPreferences sp) {
         currentUser = null;
-        sp.edit().remove("prefs_current_user");
-        sp.edit().commit();
+        SharedPreferences.Editor editor = sp.edit();
+        editor.remove("prefs_current_user");
+        editor.commit();
     }
 }
