@@ -32,6 +32,7 @@ public class MyPhotosAdaptor extends RecyclerView.Adapter<MyPhotosAdaptor.MyPhot
     @Override
     public void onBindViewHolder(MyPhotosViewHolder holder, final int position) {
         holder.folderName.setText(folderList.get(position));
+        holder.position = position;
     }
 
     @Override
@@ -44,6 +45,7 @@ public class MyPhotosAdaptor extends RecyclerView.Adapter<MyPhotosAdaptor.MyPhot
     public static class MyPhotosViewHolder extends RecyclerView.ViewHolder {
         protected ImageView folderThumbnail;
         protected TextView folderName;
+        protected int position;
 
         public MyPhotosViewHolder(View v) {
             super(v);
@@ -52,11 +54,15 @@ public class MyPhotosAdaptor extends RecyclerView.Adapter<MyPhotosAdaptor.MyPhot
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    MyPhotosGridFragment fragment = new MyPhotosGridFragment();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("folder_name", folderName.getText().toString());
-                    fragment.setArguments(bundle);
-                    ((AppCompatActivity) v.getContext()).getFragmentManager().beginTransaction().replace(R.id.frame_container, fragment).addToBackStack(null).commit();
+                    if (position <= 0) {
+                        ((AppCompatActivity) v.getContext()).getFragmentManager().beginTransaction().replace(R.id.frame_container, new AddPhotoFolderFragment()).addToBackStack(null).commit();
+                    } else {
+                        MyPhotosGridFragment fragment = new MyPhotosGridFragment();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("folder_name", folderName.getText().toString());
+                        fragment.setArguments(bundle);
+                        ((AppCompatActivity) v.getContext()).getFragmentManager().beginTransaction().replace(R.id.frame_container, fragment).addToBackStack(null).commit();
+                    }
                 }
             });
         }

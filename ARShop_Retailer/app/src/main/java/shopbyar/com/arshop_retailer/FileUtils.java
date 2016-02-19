@@ -56,4 +56,8 @@ public class FileUtils {
         }
         return new String[0];
     }
+
+    public static boolean createFolder(File dir) {
+        return dir.mkdir();
+    }
 }

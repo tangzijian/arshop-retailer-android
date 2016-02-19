@@ -46,10 +46,10 @@ public class MyPhotosFragment extends Fragment {
         recList.setLayoutManager(llm);
 
         File dir = getActivity().getExternalFilesDir(null);
-        if (User.currentUser != null) {
-            MyPhotosAdaptor adaptor = new MyPhotosAdaptor(FileUtils.getPhotoFolderNames(dir));
-            recList.setAdapter(adaptor);
-        }
+        List<String> list = FileUtils.getPhotoFolderNames(dir);
+        list.add(0, getString(R.string.add_new_folder));
+        MyPhotosAdaptor adaptor = new MyPhotosAdaptor(list);
+        recList.setAdapter(adaptor);
         return view;
     }
 }
