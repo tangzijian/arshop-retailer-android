@@ -6,10 +6,10 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 import shopbyar.com.arshop_retailer.model.User;
 import shopbyar.com.arshop_retailer.rest.RestClient;
 
@@ -27,30 +27,10 @@ public class OpenActivity extends AppCompatActivity {
         Log.d("OpenActity", "onResume");
         super.onResume();
         final User currentUser = User.fetchCurrentUser(PreferenceManager.getDefaultSharedPreferences(this));
-        if (currentUser == null) {
+        if (currentUser == null || currentUser.authToken == null) {
             gotoLoginActivity();
         } else {
             gotoMainActiviy();
-//            Call<User> call = RestClient.getSharedInstance().getApiService().userVerifyToken(currentUser);
-//            final OpenActivity self = this;
-//            call.enqueue(new Callback<User>() {
-//                @Override
-//                public void onResponse(Response<User> response, Retrofit retrofit) {
-//                    User user = User.currentUser;
-//                    if (response.body().code.equals("200")) {
-//                        User.currentUser = response.body();
-//                        User.saveCurrentUser(PreferenceManager.getDefaultSharedPreferences(self));
-//                        gotoMainActiviy();
-//                    } else {
-//                        gotoLoginActivity();
-//                    }
-//                }
-//
-//                @Override
-//                public void onFailure(Throwable t) {
-//                    gotoLoginActivity();
-//                }
-//            });
         }
     }
 

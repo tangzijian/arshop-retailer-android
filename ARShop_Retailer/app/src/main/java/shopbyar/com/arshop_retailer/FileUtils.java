@@ -12,6 +12,7 @@ import java.util.List;
  */
 public class FileUtils {
     public static File[] getPhotoFolders(File baseDir) {
+        createDefaultFolderIfNeeded(baseDir);
         List<File> results = new ArrayList<>();
         if (baseDir.isDirectory()) {
             File[] files = baseDir.listFiles();
@@ -27,12 +28,24 @@ public class FileUtils {
     }
 
     public static List<String> getPhotoFolderNames(File baseDir) {
+        createDefaultFolderIfNeeded(baseDir);
         File[] files = getPhotoFolders(baseDir);
         List<String> res = new ArrayList<>();
         for (File f : files) {
             res.add(f.getName());
         }
         return res;
+    }
+
+    private static void createDefaultFolderIfNeeded(File baseDir) {
+        File defaultFolder = new File(baseDir, "default");
+        if (!defaultFolder.exists()) {
+            try {
+                defaultFolder.mkdir();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public static String[] getPhotoURLsUnderFolder(File baseDir, String folderName) {

@@ -17,12 +17,15 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 import shopbyar.com.arshop_retailer.model.LoginUser;
 import shopbyar.com.arshop_retailer.model.User;
 import shopbyar.com.arshop_retailer.rest.RestClient;
@@ -81,11 +84,12 @@ public class LoginActivity extends AppCompatActivity {
         user.setUsername(username);
         user.setPassword(password);
         user.setType("name_and_password");
+
         Call<User> call = RestClient.getSharedInstance().getApiService().userLogin(user);
         final LoginActivity self = this;
         call.enqueue(new Callback<User>() {
             @Override
-            public void onResponse(Response<User> response, Retrofit retrofit) {
+            public void onResponse(Call<User> call, Response<User> response) {
                 User.currentUser = response.body();
                 if (User.currentUser != null) {
                     User.saveCurrentUser(PreferenceManager.getDefaultSharedPreferences(self));
@@ -102,7 +106,7 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<User> call, Throwable t) {
                 Log.d(TAG, t.getMessage());
                 onLoginFailed();
                 progressDialog.dismiss();

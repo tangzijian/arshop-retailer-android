@@ -21,6 +21,7 @@ public class User {
     public List<UserShop> shops;
     @SerializedName("code")
     public String code;
+    public String message;
 
     public static User currentUser = null;
 

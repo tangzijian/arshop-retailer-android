@@ -1,10 +1,11 @@
 package shopbyar.com.arshop_retailer.rest;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.util.concurrent.TimeUnit;
 
-import retrofit.GsonConverterFactory;
-import retrofit.Retrofit;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 import shopbyar.com.arshop_retailer.rest.service.APIService;
 
 /**
@@ -18,9 +19,19 @@ public class RestClient {
     private APIService apiService;
 
     private RestClient() {
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .connectTimeout(1, TimeUnit.MINUTES)
+                .readTimeout(1, TimeUnit.MINUTES)
+                .addInterceptor(interceptor)
+                .build();
+
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
                 .build();
         apiService = retrofit.create(APIService.class);
     }

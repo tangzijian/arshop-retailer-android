@@ -12,13 +12,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
-import shopbyar.com.arshop_retailer.model.RegisterUser;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import shopbyar.com.arshop_retailer.model.User;
 import shopbyar.com.arshop_retailer.rest.RestClient;
 
@@ -74,23 +75,22 @@ public class SignupActivity extends AppCompatActivity {
         String username = _usernameText.getText().toString();
         String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
+        Map<String, String> params = new HashMap<>();
+        params.put("username", username);
+        params.put("password", password);
+        params.put("email", email);
 
-        RegisterUser user = new RegisterUser();
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setPassword(password);
-
-        Call<User> call = RestClient.getSharedInstance().getApiService().userSignup(user);
+        Call<User> call = RestClient.getSharedInstance().getApiService().userSignup(params);
         call.enqueue(new Callback<User>() {
             @Override
-            public void onResponse(Response<User> response, Retrofit retrofit) {
+            public void onResponse(Call<User> call, Response<User> response) {
                 User user = response.body();
                 progressDialog.dismiss();
                 onSignupSuccess();
             }
 
             @Override
-            public void onFailure(Throwable t) {
+            public void onFailure(Call<User> call, Throwable t) {
                 progressDialog.dismiss();
                 onSignupFailed();
             }
